@@ -4,24 +4,16 @@ using System.Collections;
 public class playerControllerCC : MonoBehaviour {
 
 	//PUBLIC VARIABLES
-	public float speed = 6.0F;
+	public float speed = 0.20F;
+	public float rotateSpeed = 50F;
 	public float jumpSpeed = 8.0F;
 	public float gravity = 20.0F;
-	public GameObject rotZobject;
-	public GameObject rotXobject;
 	public GameObject sphereMesh;
 
 	//PRIVATE VARIABLES
 	private Vector3 moveDirection = Vector3.zero;
 	private CharacterController controller;
 
-	//rotations
-	private float rotX = 0.0f;
-	private float rotZ = 0.0f;
-
-	private float distance = 5.0f;
-	private float xSpeed = 100.0f;
-	private float ySpeed = 100.0f;
 
 	// Use this for initialization
 	void Start () 
@@ -33,7 +25,10 @@ public class playerControllerCC : MonoBehaviour {
 
 	void Update() 
 	{
-		if (controller.isGrounded) {
+
+		//sphereMesh.transform.Rotate(0, Input.GetAxis("Horizontal") * rotateSpeed, Input.GetAxis("Vertical") * speed);
+
+		if(controller.isGrounded) {
 			moveDirection = new Vector3 (Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
 			moveDirection = transform.TransformDirection (moveDirection);
 			moveDirection *= speed;
@@ -41,30 +36,34 @@ public class playerControllerCC : MonoBehaviour {
 				moveDirection.y = jumpSpeed;
 			
 		} 
+
 		moveDirection.y -= gravity * Time.deltaTime;
-		controller.Move(moveDirection * Time.deltaTime);
+		controller.Move (moveDirection * Time.deltaTime);
 
-		rotZ -= Input.GetAxis("Horizontal") * xSpeed * distance* 0.02f;
-		//Quaternion rotationZ = Quaternion.Euler(0.0f, 0.0f, rotZ);
-		//rotZobject.transform.rotation = rotationZ;
-		//rotZobject.transform.Rotate(0, 0, rotZ, Space.Self);
+		//rotations
+	
+		Vector3 pivot = controller.transform.position;
+		float angleSideways = 10 * Input.GetAxis ("Horizontal");
+		float angleForward = 10 * Input.GetAxis ("Vertical");
 
-		rotX += Input.GetAxis ("Vertical") * ySpeed * distance* 0.02f;
-		//Quaternion rotationX = Quaternion.Euler(rotX, 0.0f, 0.0f);
-		//rotXobject.transform.rotation = rotationX;
-		//rotZobject.transform.Rotate(rotX, 0, 0, Space.Self);
+		// To rotate around the world's up axis
+		//sphereMesh.transform.RotateAround(pivot, Vector3.up, angle);
+		//sphereMesh.transform.RotateAround(pivot, Vector3.left, angleForward);
 
-		Debug.Log (rotZ);
-		rotZobject.transform.eulerAngles = new Vector3(rotX, 0, -rotZ);
-		//rotXobject.transform.eulerAngles = new Vector3(, 0, 0);
+		// To rotate around the object's up axis
+		sphereMesh.transform.RotateAround(pivot, sphereMesh.transform.forward, -angleSideways);
 
-
-
+		//sphereMesh.transform.RotateAround(pivot, sphereMesh.transform.right, angleForward);
 
 
-
-
+		//sphereMesh.transform.rotation=Quaternion.identity;
+		//sphereMesh.transform.Rotate(moveDirection,Space.World); 
+		//sphereMesh.transform.Rotate( 0.5f, -0.5f, 0 );
+		//Vector3 forward = transform.TransformDirection(Vector3.forward);
+		//float curSpeed = speed * Input.GetAxis("Vertical");
+		//controller.SimpleMove(forward * curSpeed);
 
 
 	}
+
 }
